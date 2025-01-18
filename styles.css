@@ -1,0 +1,176 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  margin: 0;
+}
+
+.screen {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+#gameCanvas {
+  border: 1px solid #000;
+  background-color: #fff;
+}
+
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+button, select {
+  padding: 10px;
+  font-size: 16px;
+  margin: 5px;
+}
+
+#startScreen, #recordsScreen, #customizeScreen {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(250, 0, 0); /* Красная тень, как на стартовом экране */
+}
+
+#startScreen h1, #recordsScreen h1, #customizeScreen h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+#startScreen button {
+    padding: 15px 30px; /* Одинаковые отступы для всех кнопок */
+    font-size: 20px; /* Одинаковый размер шрифта */
+    cursor: pointer;
+    width: 200px; /* Фиксированная ширина кнопок */
+    margin: 10px 0; /* Отступы между кнопками */
+    border: 2px solid white; /* Белая рамка вокруг кнопок */
+    border-radius: 5px; /* Скругление углов */
+    background-color: #ff4444; /* Красный цвет фона */
+    color: white; /* Белый текст */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для кнопок */
+    transition: background-color 0.3s, transform 0.2s; /* Плавные переходы */
+}
+
+#startScreen button:hover {
+    background-color: #cc0000; /* Темнее при наведении */
+    transform: scale(1.05); /* Увеличиваем кнопку при наведении */
+}
+
+#startScreen button:active {
+    transform: scale(0.95); /* Уменьшаем кнопку при нажатии */
+}
+
+#restartButton, #menuButton {
+    padding: 15px 30px; /* Одинаковые отступы для всех кнопок */
+    font-size: 20px; /* Одинаковый размер шрифта */
+    cursor: pointer;
+    width: 200px; /* Фиксированная ширина кнопок */
+    margin: 10px 0; /* Отступы между кнопками */
+    border: 2px solid white; /* Белая рамка вокруг кнопок */
+    border-radius: 5px; /* Скругление углов */
+    background-color: #ff4444; /* Красный цвет фона */
+    color: white; /* Белый текст */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для кнопок */
+    transition: background-color 0.3s, transform 0.2s; /* Плавные переходы */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#restartButton {
+    top: 50%; /* Позиция кнопки "Попробуй снова" */
+}
+
+#menuButton {
+    top: 65%; /* Увеличиваем отступ для кнопки "Меню" */
+}
+
+#restartButton:hover, #menuButton:hover {
+    background-color: #cc0000; /* Темнее при наведении */
+    transform: translateX(-50%) scale(1.05); /* Увеличиваем кнопку при наведении */
+}
+
+#restartButton:active, #menuButton:active {
+    transform: translateX(-50%) scale(0.95); /* Уменьшаем кнопку при нажатии */
+}
+
+#score {
+  color: red;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+button:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+
+button:active {
+  transform: scale(0.9);
+}
+#pauseButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: #ff4444;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#pauseButton:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+#pauseButton:active {
+  transform: scale(0.95);
+}
+
+#pauseMenu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#resumeButton, #pauseMenuButton {
+  padding: 15px 30px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 200px;
+  margin: 10px 0;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: #ff4444;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#resumeButton:hover, #pauseMenuButton:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+#resumeButton:active, #pauseMenuButton:active {
+  transform: scale(0.95);
+}
