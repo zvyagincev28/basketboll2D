@@ -12,8 +12,12 @@ const recordsList = document.getElementById('recordsList');
 const backToStartButton = document.getElementById('backToStartButton');
 const customizeButton = document.getElementById('customizeButton');
 const customizeScreen = document.getElementById('customizeScreen');
-const ballSelect = document.getElementById('ballSelect');
-const fieldSelect = document.getElementById('fieldSelect');
+const prevBallButton = document.getElementById('prevBallButton');
+const nextBallButton = document.getElementById('nextBallButton');
+const ballTypeDisplay = document.getElementById('ballTypeDisplay');
+const prevFieldButton = document.getElementById('prevFieldButton');
+const nextFieldButton = document.getElementById('nextFieldButton');
+const fieldTypeDisplay = document.getElementById('fieldTypeDisplay');
 const backToStartButton2 = document.getElementById('backToStartButton2');
 const pauseButton = document.getElementById('pauseButton');
 const pauseMenu = document.getElementById('pauseMenu');
@@ -66,6 +70,43 @@ const road = {
 const friction = 0.50;
 const minSpeed = 1;
 
+let ballIndex = 0;
+let fieldIndex = 0;
+
+function updateBallDisplay() {
+    ballTypeDisplay.textContent = balls[ballIndex].type;
+    ballType = balls[ballIndex].type;
+}
+
+function updateFieldDisplay() {
+    fieldTypeDisplay.textContent = fields[fieldIndex].type;
+    fieldType = fields[fieldIndex].type;
+    drawField();
+}
+
+prevBallButton.addEventListener('click', () => {
+    ballIndex = (ballIndex - 1 + balls.length) % balls.length;
+    updateBallDisplay();
+});
+
+nextBallButton.addEventListener('click', () => {
+    ballIndex = (ballIndex + 1) % balls.length;
+    updateBallDisplay();
+});
+
+prevFieldButton.addEventListener('click', () => {
+    fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
+    updateFieldDisplay();
+});
+
+nextFieldButton.addEventListener('click', () => {
+    fieldIndex = (fieldIndex + 1) % fields.length;
+    updateFieldDisplay();
+});
+
+updateBallDisplay();
+updateFieldDisplay();
+
 function resizeCanvas() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -74,34 +115,13 @@ function resizeCanvas() {
     canvas.height = height;
 
     road.y = canvas.height - 20;
+    road.width = canvas.width;
+
     joystick.y = canvas.height - 100;
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
-
-balls.forEach(ball => {
-    const option = document.createElement('option');
-    option.value = ball.type;
-    option.textContent = ball.type;
-    ballSelect.appendChild(option);
-});
-
-fields.forEach(field => {
-    const option = document.createElement('option');
-    option.value = field.type;
-    option.textContent = field.type;
-    fieldSelect.appendChild(option);
-});
-
-ballSelect.addEventListener('change', (e) => {
-    ballType = e.target.value;
-});
-
-fieldSelect.addEventListener('change', (e) => {
-    fieldType = e.target.value;
-    drawField();
-});
 
 startButton.addEventListener('click', () => {
     playerName = document.getElementById('playerName').value.trim();

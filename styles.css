@@ -102,19 +102,16 @@ button, select {
     transform: translateX(-50%) scale(0.95);
 }
 
-#score {
-  color: red;
+#scoreContainer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
   font-size: 24px;
   font-weight: bold;
-}
-
-button:hover {
-  transform: scale(1.1);
-  transition: transform 0.2s;
-}
-
-button:active {
-  transform: scale(0.9);
+  color: red;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
 #pauseButton {
@@ -179,7 +176,7 @@ button:active {
 @media (max-width: 768px) {
     #gameCanvas {
         width: 100%;
-        height: auto;
+        height: 100vh;
     }
 
     #startScreen, #recordsScreen, #customizeScreen {
@@ -200,5 +197,9 @@ button:active {
     #pauseButton {
         font-size: 14px;
         padding: 8px 16px;
+    }
+
+    #scoreContainer {
+        font-size: 18px;
     }
 }

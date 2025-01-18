@@ -24,7 +24,7 @@
         <button id="restartButton" class="hidden">Попробуй снова</button>
         <button id="menuButton" class="hidden">Меню</button>
         <div id="pauseMenu" class="hidden">
-            <br><button id="resumeButton">Продолжить игру</button><br>
+            <Br></Br><button id="resumeButton">Продолжить игру</button><br>
             <br><button id="pauseMenuButton">Меню</button><br>
         </div>
     </div>
@@ -35,8 +35,16 @@
     </div>
     <div id="customizeScreen" class="screen hidden">
         <h1>Оформление</h1>
-        <p>Мяч: <select id="ballSelect"></select></p>
-        <p>Поле: <select id="fieldSelect"></select></p>
+        <p>Мяч:
+            <button id="prevBallButton">←</button>
+            <span id="ballTypeDisplay">default</span>
+            <button id="nextBallButton">→</button>
+        </p>
+        <p>Поле:
+            <button id="prevFieldButton">←</button>
+            <span id="fieldTypeDisplay">default</span>
+            <button id="nextFieldButton">→</button>
+        </p>
         <button id="backToStartButton2">Назад</button>
     </div>
     <audio id="buttonSound" src="button-click.mp3"></audio>
