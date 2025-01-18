@@ -15,10 +15,10 @@ const customizeScreen = document.getElementById('customizeScreen');
 const ballSelect = document.getElementById('ballSelect');
 const fieldSelect = document.getElementById('fieldSelect');
 const backToStartButton2 = document.getElementById('backToStartButton2');
-const pauseButton = document.getElementById('pauseButton'); // Новая кнопка "Пауза"
-const pauseMenu = document.getElementById('pauseMenu'); // Меню паузы
-const resumeButton = document.getElementById('resumeButton'); // Кнопка "Продолжить игру"
-const pauseMenuButton = document.getElementById('pauseMenuButton'); // Кнопка "Меню" в паузе
+const pauseButton = document.getElementById('pauseButton');
+const pauseMenu = document.getElementById('pauseMenu');
+const resumeButton = document.getElementById('resumeButton');
+const pauseMenuButton = document.getElementById('pauseMenuButton');
 
 let playerName = '';
 let score = 0;
@@ -30,7 +30,7 @@ let isBallThrown = false;
 let streak = 0;
 let isScored = false;
 let isCleanShot = true;
-let isPaused = false; // Состояние паузы
+let isPaused = false;
 
 let joystick = {
     x: 100,
@@ -65,6 +65,20 @@ const road = {
 
 const friction = 0.50;
 const minSpeed = 1;
+
+function resizeCanvas() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    road.y = canvas.height - 20;
+    joystick.y = canvas.height - 100;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 balls.forEach(ball => {
     const option = document.createElement('option');
@@ -249,9 +263,11 @@ canvas.addEventListener('mouseup', () => {
 });
 
 canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
     const touch = e.touches[0];
-    const mouseX = touch.clientX - canvas.offsetLeft;
-    const mouseY = touch.clientY - canvas.offsetTop;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = touch.clientX - rect.left;
+    const mouseY = touch.clientY - rect.top;
 
     const distance = Math.sqrt((mouseX - joystick.x) ** 2 + (mouseY - joystick.y) ** 2);
     if (distance <= joystick.baseRadius) {
@@ -262,10 +278,12 @@ canvas.addEventListener('touchstart', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
     if (joystick.isDragging) {
         const touch = e.touches[0];
-        const mouseX = touch.clientX - canvas.offsetLeft;
-        const mouseY = touch.clientY - canvas.offsetTop;
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = touch.clientX - rect.left;
+        const mouseY = touch.clientY - rect.top;
 
         const deltaX = mouseX - joystick.x - joystick.dragStartX;
         const deltaY = mouseY - joystick.y - joystick.dragStartY;
