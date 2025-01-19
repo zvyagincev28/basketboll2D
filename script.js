@@ -28,13 +28,14 @@ let playerName = '';
 let score = 0;
 let ballType = 'default';
 let fieldType = 'default';
-let ball = { x: 400, y: 550, radius: 20, dx: 0, dy: 0 };
+let ball = { x: canvas.width / 2 - 100, y: canvas.height - 50, radius: 20, dx: 0, dy: 0 };
 let hoop = { x: 50, y: 200, width: 80, height: 10, backboardWidth: 10, backboardHeight: 60 };
 let isBallThrown = false;
 let streak = 0;
 let isScored = false;
 let isCleanShot = true;
 let isPaused = false;
+let isGameOver = false;
 
 let joystick = {
     x: 100,
@@ -62,9 +63,9 @@ const fields = [
 
 const road = {
     x: 0,
-    y: canvas.height - 20,
+    y: canvas.height - 30,
     width: canvas.width,
-    height: 20,
+    height: 30,
 };
 
 const friction = 0.50;
@@ -108,16 +109,18 @@ updateBallDisplay();
 updateFieldDisplay();
 
 function resizeCanvas() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = window.innerWidth > 800 ? 800 : window.innerWidth;
+    const height = window.innerHeight > 600 ? 600 : window.innerHeight;
 
     canvas.width = width;
     canvas.height = height;
 
-    road.y = canvas.height - 20;
+    road.y = canvas.height - 30;
     road.width = canvas.width;
 
     joystick.y = canvas.height - 100;
+    ball.x = canvas.width / 2 - 100;
+    ball.y = canvas.height - 50;
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -242,6 +245,8 @@ function drawTrajectory() {
 }
 
 canvas.addEventListener('mousedown', (e) => {
+    if (isGameOver) return;
+
     const mouseX = e.offsetX;
     const mouseY = e.offsetY;
 
@@ -254,6 +259,8 @@ canvas.addEventListener('mousedown', (e) => {
 });
 
 canvas.addEventListener('mousemove', (e) => {
+    if (isGameOver) return;
+
     if (joystick.isDragging) {
         const mouseX = e.offsetX;
         const mouseY = e.offsetY;
@@ -274,6 +281,8 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mouseup', () => {
+    if (isGameOver) return;
+
     if (joystick.isDragging) {
         joystick.isDragging = false;
         throwBall();
@@ -283,6 +292,8 @@ canvas.addEventListener('mouseup', () => {
 });
 
 canvas.addEventListener('touchstart', (e) => {
+    if (isGameOver) return;
+
     e.preventDefault();
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
@@ -298,6 +309,8 @@ canvas.addEventListener('touchstart', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
+    if (isGameOver) return;
+
     e.preventDefault();
     if (joystick.isDragging) {
         const touch = e.touches[0];
@@ -321,6 +334,8 @@ canvas.addEventListener('touchmove', (e) => {
 });
 
 canvas.addEventListener('touchend', () => {
+    if (isGameOver) return;
+
     if (joystick.isDragging) {
         joystick.isDragging = false;
         throwBall();
@@ -362,6 +377,8 @@ function checkCollision() {
             streak = 0;
             score = 0;
             scoreDisplay.textContent = score;
+            isGameOver = true;
+            document.getElementById('gameCanvas').classList.add('blur');
             restartButton.classList.remove('hidden');
             menuButton.classList.remove('hidden');
         }
@@ -378,6 +395,8 @@ function checkCollision() {
             streak = 0;
             score = 0;
             scoreDisplay.textContent = score;
+            isGameOver = true;
+            document.getElementById('gameCanvas').classList.add('blur');
             restartButton.classList.remove('hidden');
             menuButton.classList.remove('hidden');
         }
@@ -424,7 +443,7 @@ function moveHoop() {
 }
 
 function update() {
-    if (!isPaused && isBallThrown) {
+    if (!isPaused && isBallThrown && !isGameOver) {
         ball.x += ball.dx;
         ball.y += ball.dy;
         ball.dy += 0.2;
@@ -500,6 +519,8 @@ function resetGame() {
     menuButton.classList.add('hidden');
     isPaused = false;
     pauseMenu.classList.add('hidden');
+    isGameOver = false;
+    document.getElementById('gameCanvas').classList.remove('blur');
 }
 
 drawField();

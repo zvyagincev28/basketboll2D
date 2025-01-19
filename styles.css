@@ -34,10 +34,10 @@ button, select {
 }
 
 #startScreen, #recordsScreen, #customizeScreen {
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(250, 0, 0);
+  box-shadow: 0 0 10px rgb(247, 88, 2);
 }
 
 #startScreen h1, #recordsScreen h1, #customizeScreen h1 {
@@ -53,14 +53,14 @@ button, select {
     margin: 10px 0;
     border: 2px solid white;
     border-radius: 5px;
-    background-color: #ff4444;
+    background-color: #ea7b44;
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, transform 0.2s;
 }
 
 #startScreen button:hover {
-    background-color: #cc0000;
+  background-color: #cc5c00ee;
     transform: scale(1.05);
 }
 
@@ -76,7 +76,7 @@ button, select {
     margin: 10px 0;
     border: 2px solid white;
     border-radius: 5px;
-    background-color: #ff4444;
+    background-color: #ea7b44;
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, transform 0.2s;
@@ -94,7 +94,7 @@ button, select {
 }
 
 #restartButton:hover, #menuButton:hover {
-    background-color: #cc0000;
+    background-color: #cc5c00ee;
     transform: translateX(-50%) scale(1.05);
 }
 
@@ -120,7 +120,7 @@ button, select {
   cursor: pointer;
   border: 2px solid white;
   border-radius: 5px;
-  background-color: #ff4444;
+  background-color: #ea7b44;
   color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s, transform 0.2s;
@@ -130,7 +130,7 @@ button, select {
 }
 
 #pauseButton:hover {
-  background-color: #cc0000;
+  background-color: #cc5c00ee;
   transform: scale(1.05);
 }
 
@@ -158,19 +158,23 @@ button, select {
   margin: 10px 0;
   border: 2px solid white;
   border-radius: 5px;
-  background-color: #ff4444;
+  background-color: #ea7b40;
   color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s, transform 0.2s;
 }
 
 #resumeButton:hover, #pauseMenuButton:hover {
-  background-color: #cc0000;
+  background-color: #cc5c00ee;
   transform: scale(1.05);
 }
 
 #resumeButton:active, #pauseMenuButton:active {
   transform: scale(0.95);
+}
+
+.blur {
+    filter: blur(5px);
 }
 
 @media (max-width: 768px) {
