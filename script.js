@@ -24,11 +24,42 @@ const pauseMenu = document.getElementById('pauseMenu');
 const resumeButton = document.getElementById('resumeButton');
 const pauseMenuButton = document.getElementById('pauseMenuButton');
 
+// Массив мячей с изображениями
+const balls = [
+    { 
+        type: 'basketball',
+        image: new Image(),
+        src: 'assets/default_ball.png',
+        color: 'gray'
+    },
+    { 
+        type: 'fooball',
+        image: new Image(),
+        src: 'assets/new_ball.png', // Исправленный путь
+        color: 'brown'
+    },
+    { 
+        type: 'volleyball',
+        image: new Image(),
+        src: 'assets/new_ball2.png', // Исправленный путь
+        color: 'white'
+    }
+];
+
+// Предзагрузка изображений
+balls.forEach(ball => {
+    ball.image.src = ball.src;
+    ball.image.onload = () => {
+        console.log(`Изображение "${ball.type}" загружено`);
+        drawBall();
+    };
+});
+
 let playerName = '';
 let score = 0;
 let ballType = 'default';
 let fieldType = 'default';
-let ball = { x: canvas.width / 2 - 100, y: canvas.height - 50, radius: 20, dx: 0, dy: 0 };
+let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dx: 0, dy: 0 }; // Стартовая позиция по центру
 let hoop = { x: 50, y: 200, width: 80, height: 10, backboardWidth: 10, backboardHeight: 60 };
 let isBallThrown = false;
 let streak = 0;
@@ -48,12 +79,6 @@ let joystick = {
     dragX: 0,
     dragY: 0
 };
-
-const balls = [
-    { type: 'default', color: 'orange' },
-    { type: 'basketball', color: 'brown' },
-    { type: 'volleyball', color: 'white' }
-];
 
 const fields = [
     { type: 'default', color: 'lightgreen' },
@@ -76,7 +101,8 @@ let fieldIndex = 0;
 
 function updateBallDisplay() {
     ballTypeDisplay.textContent = balls[ballIndex].type;
-    ballType = balls[ballIndex].type;
+    // Принудительная перерисовка мяча
+    drawBall();
 }
 
 function updateFieldDisplay() {
@@ -119,7 +145,7 @@ function resizeCanvas() {
     road.width = canvas.width;
 
     joystick.y = canvas.height - 100;
-    ball.x = canvas.width / 2 - 100;
+    ball.x = canvas.width / 2; // Центр по X
     ball.y = canvas.height - 50;
 }
 
@@ -178,17 +204,27 @@ function drawField() {
 }
 
 function drawBall() {
-    const ballStyle = balls.find(b => b.type === ballType);
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fillStyle = ballStyle.color;
-    ctx.fill();
-    ctx.closePath();
+    const currentBall = balls[ballIndex];
+    
+    if (currentBall.image.complete) {
+        ctx.drawImage(
+            currentBall.image,
+            ball.x - ball.radius,
+            ball.y - ball.radius,
+            ball.radius * 2,
+            ball.radius * 2
+        );
+    } else {
+        // Фолбэк с цветом из массива
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = currentBall.color;
+        ctx.fill();
+        ctx.closePath();
+    }
 }
 
 function drawHoop() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(hoop.x - hoop.backboardWidth, hoop.y, hoop.backboardWidth, hoop.backboardHeight);
 
     ctx.fillStyle = 'red';
     ctx.fillRect(hoop.x, hoop.y, 10, hoop.height);
@@ -361,9 +397,11 @@ function checkCollision() {
         ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
         ball.x + ball.radius >= hoop.x + 10 && ball.x - ball.radius <= hoop.x + hoop.width - 10) {
         if (!isScored) {
-            scoreSound.play();
-            streak += 1;
-            score += streak;
+            if (!isCleanShot) {
+                score += 2; // +2 за отскок
+            } else {
+                score += 1; // +1 за чистый бросок
+            }
             scoreDisplay.textContent = score;
             isScored = true;
             moveHoop();
@@ -521,6 +559,8 @@ function resetGame() {
     pauseMenu.classList.add('hidden');
     isGameOver = false;
     document.getElementById('gameCanvas').classList.remove('blur');
+    ball.x = canvas.width / 2; // Центр
+    ball.y = canvas.height - 50; // Стартовая позиция
 }
 
 drawField();
