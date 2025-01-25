@@ -475,11 +475,11 @@ canvas.addEventListener('touchmove', (e) => {
     const mouseX = touch.clientX - rect.left;
     const mouseY = touch.clientY - rect.top;
 
-    // Рассчитываем смещение относительно начальной точки
-    const deltaX = mouseX - joystick.dragStartX;
-    const deltaY = mouseY - joystick.dragStartY;
+    // Правильный расчет смещения относительно начальной точки
+    const deltaX = mouseX - joystick.x; // Относительно центра джойстика
+    const deltaY = mouseY - joystick.y;
     
-    // Ограничиваем смещение радиусом джойстика
+    // Ограничение радиуса
     const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
     if (distance <= joystick.baseRadius) {
         joystick.dragX = deltaX;
