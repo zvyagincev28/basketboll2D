@@ -131,6 +131,7 @@ class Coin {
     }
 }
 
+
 function spawnCoins() {
     if (Math.random() < 0.02 && coinsArr.length < 5) {
         coinsArr.push(new Coin());
@@ -153,13 +154,13 @@ function checkCoinCollision() {
         const distance = Math.sqrt(dx ** 2 + dy ** 2);
 
         if (distance < ball.radius + coin.radius) {
-            coins++;
+            coins+= +1;
             localStorage.setItem('coins', coins);
             updateGameUI();
         }
         
         if (distance < ball.radius + coin.radius) {
-            coins++;
+            coins += 0;
             localStorage.setItem('coins', coins);
             document.getElementById('coinSound').play();
             return false;
@@ -227,16 +228,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 prevBallButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     ballIndex = (ballIndex - 1 + balls.length) % balls.length;
     document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
 });
 
 nextBallButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     ballIndex = (ballIndex + 1) % balls.length;
     document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
 });
+
+function updateBallDisplay() {
+    const currentBall = balls[ballIndex];
+    document.getElementById('ballPrice').textContent = ballPrices[ballIndex];
+    document.getElementById('buyBallButton').disabled = currentBall.unlocked || coins < ballPrices[ballIndex];
+    document.getElementById('backToStartButton2').disabled = !currentBall.unlocked;
+}
 
 prevFieldButton.addEventListener('click', () => {
     let newIndex = fieldIndex;
@@ -300,6 +310,7 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 startButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     playerName = document.getElementById('playerName').value.trim();
     if (playerName === '') {
         alert('Пожалуйста, введите ваше имя!');
@@ -311,12 +322,14 @@ startButton.addEventListener('click', () => {
 });
 
 restartButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     resetGame();
     restartButton.classList.add('hidden');
     menuButton.classList.add('hidden');
 });
 
 menuButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     resetGame();
     gameScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
@@ -324,16 +337,19 @@ menuButton.addEventListener('click', () => {
 });
 
 pauseButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     isPaused = true;
     pauseMenu.classList.remove('hidden');
 });
 
 resumeButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     isPaused = false;
     pauseMenu.classList.add('hidden');
 });
 
 pauseMenuButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     isPaused = false;
     pauseMenu.classList.add('hidden');
     gameScreen.classList.add('hidden');
@@ -424,10 +440,12 @@ function drawTrajectory() {
             ctx.lineTo(x, y);
         }
 
-        ctx.strokeStyle = 'rgba(246, 7, 7, 0.5)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(128, 128, 128, 0.76)'; // Серая линия
+        ctx.setLineDash([5, 5]); // Пунктирная линия
+        ctx.lineWidth = 2 + force / 5; // Линия увеличивается с силой броска
         ctx.stroke();
         ctx.closePath();
+        ctx.setLineDash([]); // Сброс пунктирной линии
     }
 }
 
@@ -553,6 +571,13 @@ function checkWallCollision() {
         ball.dx *= -0.8;
         ball.isWallBounce = true; // Устанавливаем флаг
         isCleanShot = false;
+
+        // Корректировка позиции мяча, чтобы он не застревал в стене
+        if (ball.x - ball.radius < 0) {
+            ball.x = ball.radius;
+        } else if (ball.x + ball.radius > canvas.width) {
+            ball.x = canvas.width - ball.radius;
+        }
     }
 
     if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height) {
@@ -570,7 +595,7 @@ function checkCollision() {
     // Попадание в кольцо
     if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
         ball.x + ball.radius >= hoop.x + 10 && ball.x - ball.radius <= hoop.x + hoop.width - 10) {
-        if (!isScored) {
+        if (!isScored && ball.dy > 0) { // Проверяем, что мяч летит вниз
             score += 1; // +1 за попадание
             scoreDisplay.textContent = score;
             isScored = true;
@@ -683,22 +708,26 @@ function saveRecord() {
 }
 
 showRecordsButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     startScreen.classList.add('hidden');
     recordsScreen.classList.remove('hidden');
     loadRecords();
 });
 
 backToStartButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     recordsScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
 });
 
 customizeButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     startScreen.classList.add('hidden');
     customizeScreen.classList.remove('hidden');
 });
 
 backToStartButton2.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     customizeScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
 });
@@ -765,12 +794,14 @@ document.getElementById('customizeButton').addEventListener('click', () => {
 });
 
 prevFieldButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
 });
 
 nextFieldButton.addEventListener('click', () => {
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
     fieldIndex = (fieldIndex + 1) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
@@ -788,7 +819,13 @@ prevFieldButton.addEventListener('click', () => {
         updateFieldDisplay();
     }
 });
-
+function draw() {
+    drawField();
+    drawHoop(); // Сначала рисуем кольцо
+    drawBall(); // Затем мяч
+    drawJoystick();
+    drawTrajectory();
+}
 
 drawField();
 gameLoop();

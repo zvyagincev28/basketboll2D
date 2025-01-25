@@ -273,10 +273,11 @@ button, select {
 
 /* Отображение монет в игре */
 #coinsDisplayGame {
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    font-size: 24px;
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  font-size: 18px;
+  font-weight: bold;
     color: gold;
     background-color: rgba(0, 0, 0, 0.7);
     padding: 5px 10px;
