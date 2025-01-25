@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Times New Roman', Times, serif, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -243,23 +243,28 @@ button, select {
   border-radius: 5px;
   margin: 5px;
 }
+
 /* Стили для заблокированных предметов */
 #ballTypeDisplay, #fieldTypeDisplay {
   color: red;
   font-weight: bold;
 }
 #backToStartButton2 {
-    padding: 15px 30px;
-    font-size: 20px;
-    cursor: pointer;
-    width: 200px;
-    margin: 10px 0;
-    border: 2px solid white;
-    border-radius: 5px;
-    background-color: #ea7b44;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.2s;
+  padding: 15px 30px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 200px;
+  margin: 10px 0;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: #ea7b44;
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#backToStartButton2:hover {
+  background-color: #cc5c00ee;
+  transform: scale(1.05);
 }
 
 /* Отображение монет в игре */
@@ -272,4 +277,52 @@ button, select {
     background-color: rgba(0, 0, 0, 0.7);
     padding: 5px 10px;
     border-radius: 5px;
+}
+.scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 20px 0;
+  border: 2px solid #ea7b44;
+  border-radius: 10px;
+  padding: 10px;
+}
+.preview-img, .preview-block {
+  transition: opacity 0.3s ease-in-out;
+}
+#buyBallButton:disabled, #buyFieldButton:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+}
+
+#buyBallButton:enabled, #buyFieldButton:enabled {
+  background-color: #4CAF50 !important;
+}
+#buyBallButton, #buyFieldButton {
+  transition: background-color 0.3s;
+}
+
+#buyBallButton:disabled, #buyFieldButton:disabled {
+  background-color: #999 !important;
+  cursor: not-allowed;
+}
+
+#buyBallButton:not(:disabled), #buyFieldButton:not(:disabled) {
+  background-color: #4CAF50 !important;
+}
+#backToStartButton {
+  padding: 15px 30px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 200px;
+  margin: 10px 0;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: #ea7b44;
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#backToStartButton:hover {
+  background-color: #cc5c00ee;
+  transform: scale(1.05);
 }

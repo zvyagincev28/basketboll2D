@@ -105,7 +105,8 @@ let joystick = {
     dragStartX: 0,
     dragStartY: 0,
     dragX: 0,
-    dragY: 0
+    dragY: 0,
+    isVisible: false
 };
 
 const road = {
@@ -170,16 +171,16 @@ function checkCoinCollision() {
 
 function updateBallDisplay() {
     const currentBall = balls[ballIndex];
-    ballTypeDisplay.textContent = currentBall.unlocked ? currentBall.type : "Недостаточно монеток";
-    document.getElementById('buyBallButton').disabled = currentBall.unlocked;
-    drawBall();
+    document.getElementById('ballPrice').textContent = ballPrices[ballIndex];
+    document.getElementById('buyBallButton').disabled = 
+        currentBall.unlocked || coins < ballPrices[ballIndex];
 }
 
 function updateFieldDisplay() {
     const currentField = fields[fieldIndex];
-    fieldTypeDisplay.textContent = currentField.unlocked ? currentField.type : "Недостаточно монеток";
-    document.getElementById('buyFieldButton').disabled = currentField.unlocked;
-    drawField();
+    document.getElementById('fieldPrice').textContent = fieldPrices[fieldIndex];
+    document.getElementById('buyFieldButton').disabled = 
+        currentField.unlocked || coins < fieldPrices[fieldIndex];
 }
 
 // Раскомментирован код покупки фонов
@@ -202,7 +203,7 @@ customizeButton.addEventListener('click', () => {
 
 // Увеличен шанс появления монет
 function spawnCoins() {
-    if (Math.random() < 0.03 && coinsArr.length < 3) {
+    if (Math.random() < 0.02 && coinsArr.length < 1) {
         coinsArr.push(new Coin());
     }
 }
@@ -355,6 +356,8 @@ function drawHoop() {
 }
 
 function drawJoystick() {
+    if (!joystick.isVisible) return;
+    
     ctx.beginPath();
     ctx.arc(joystick.x, joystick.y, joystick.baseRadius, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
@@ -396,43 +399,46 @@ function drawTrajectory() {
 }
 
 canvas.addEventListener('mousedown', (e) => {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    const mouseX = e.offsetX;
-    const mouseY = e.offsetY;
-
-    const distance = Math.sqrt((mouseX - joystick.x) ** 2 + (mouseY - joystick.y) ** 2);
-    if (distance <= joystick.baseRadius) {
-        joystick.isDragging = true;
-        joystick.dragStartX = mouseX - joystick.x;
-        joystick.dragStartY = mouseY - joystick.y;
-    }
+    // Устанавливаем позицию джойстика и сохраняем начальные координаты касания
+    joystick.x = mouseX;
+    joystick.y = mouseY;
+    joystick.isVisible = true;
+    joystick.isDragging = true;
+    joystick.dragStartX = mouseX; // Сохраняем абсолютные координаты
+    joystick.dragStartY = mouseY;
 });
 
 canvas.addEventListener('mousemove', (e) => {
-    if (isGameOver) return;
+    if (!joystick.isDragging || isGameOver) return;
 
-    if (joystick.isDragging) {
-        const mouseX = e.offsetX;
-        const mouseY = e.offsetY;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-        const deltaX = mouseX - joystick.x - joystick.dragStartX;
-        const deltaY = mouseY - joystick.y - joystick.dragStartY;
-        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
-        if (distance <= joystick.baseRadius) {
-            joystick.dragX = deltaX;
-            joystick.dragY = deltaY;
-        } else {
-            const angle = Math.atan2(deltaY, deltaX);
-            joystick.dragX = Math.cos(angle) * joystick.baseRadius;
-            joystick.dragY = Math.sin(angle) * joystick.baseRadius;
-        }
+    // Рассчитываем смещение относительно начальной точки
+    const deltaX = mouseX - joystick.dragStartX;
+    const deltaY = mouseY - joystick.dragStartY;
+    
+    // Ограничиваем смещение радиусом джойстика
+    const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    if (distance <= joystick.baseRadius) {
+        joystick.dragX = deltaX;
+        joystick.dragY = deltaY;
+    } else {
+        const angle = Math.atan2(deltaY, deltaX);
+        joystick.dragX = Math.cos(angle) * joystick.baseRadius;
+        joystick.dragY = Math.sin(angle) * joystick.baseRadius;
     }
 });
 
 canvas.addEventListener('mouseup', () => {
-    if (isGameOver) return;
+    joystick.isVisible = false;
 
     if (joystick.isDragging) {
         joystick.isDragging = false;
@@ -703,9 +709,19 @@ function updateShop() {
     document.getElementById('coinsDisplay').textContent = coins;
     document.getElementById('ballPrice').textContent = ballPrices[ballIndex];
     document.getElementById('fieldPrice').textContent = fieldPrices[fieldIndex];
-    document.getElementById('ballPreview').src = balls[ballIndex].src;
-    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
-}
+    
+    // Проверка доступности текущих предметов
+    const backButton = document.getElementById('backToStartButton2');
+    backButton.disabled = 
+        !balls[ballIndex].unlocked || 
+        !fields[fieldIndex].unlocked;
+    // Проверка доступности покупки
+    document.getElementById('buyBallButton').disabled = 
+        balls[ballIndex].unlocked || coins < ballPrices[ballIndex];
+        
+    document.getElementById('buyFieldButton').disabled = 
+        fields[fieldIndex].unlocked || coins < fieldPrices[fieldIndex];
+} 
 
 document.getElementById('buyBallButton').addEventListener('click', () => {
     if (coins >= ballPrices[ballIndex] && !balls[ballIndex].unlocked) {
@@ -732,6 +748,43 @@ function updateGameUI() {
 }
 document.getElementById('customizeButton').addEventListener('click', () => {
     updateShop();
+});
+
+prevBallButton.addEventListener('click', () => {
+    let newIndex = ballIndex;
+    do {
+        newIndex = (newIndex - 1 + balls.length) % balls.length;
+    } while (!balls[newIndex].unlocked && newIndex !== ballIndex);
+    
+    if (balls[newIndex].unlocked) {
+        ballIndex = newIndex;
+        updateBallDisplay();
+    }
+});
+
+nextBallButton.addEventListener('click', () => {
+    let newIndex = ballIndex;
+    do {
+        newIndex = (newIndex + 1) % balls.length;
+    } while (!balls[newIndex].unlocked && newIndex !== ballIndex);
+    
+    if (balls[newIndex].unlocked) {
+        ballIndex = newIndex;
+        updateBallDisplay();
+    }
+});
+
+// Аналогично для фонов
+prevFieldButton.addEventListener('click', () => {
+    let newIndex = fieldIndex;
+    do {
+        newIndex = (newIndex - 1 + fields.length) % fields.length;
+    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
+    
+    if (fields[newIndex].unlocked) {
+        fieldIndex = newIndex;
+        updateFieldDisplay();
+    }
 });
 
 

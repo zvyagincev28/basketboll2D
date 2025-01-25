@@ -31,7 +31,9 @@
     </div>
     <div id="recordsScreen" class="screen hidden">
         <h1>Таблица рекордов</h1>
-        <ul id="recordsList"></ul>
+        <div class="scroll-container"> <!-- Добавлен контейнер для скролла -->
+            <ul id="recordsList"></ul>
+        </div>
         <button id="backToStartButton">Назад</button>
     </div>
     <div id="customizeScreen" class="screen hidden">
@@ -69,5 +71,6 @@
     <audio id="scoreSound" src="score.mp3"></audio>
     <audio id="coinSound" src="coin.mp3"></audio>
     <script src="script.js"></script>
+    </div>
 </body>
 </html>
