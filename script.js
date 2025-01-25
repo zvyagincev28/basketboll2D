@@ -168,6 +168,17 @@ function checkCoinCollision() {
     });
 }
 
+document.getElementById('buyBallButton').addEventListener('click', () => {
+    if (coins >= ballPrices[ballIndex] && !balls[ballIndex].unlocked) {
+        coins -= ballPrices[ballIndex];
+        balls[ballIndex].unlocked = true;
+        localStorage.setItem('coins', coins);
+        updateShop();
+        // Обновляем превью мяча
+        document.getElementById('ballPreview').src = balls[ballIndex].src;
+        alert('Мяч разблокирован!');
+    }
+});
 
 function updateBallDisplay() {
     const currentBall = balls[ballIndex];
@@ -188,6 +199,7 @@ document.getElementById('buyFieldButton').addEventListener('click', () => {
     if (coins >= fieldPrices[fieldIndex] && !fields[fieldIndex].unlocked) {
         coins -= fieldPrices[fieldIndex];
         fields[fieldIndex].unlocked = true;
+        fieldType = fields[fieldIndex].type;
         localStorage.setItem('coins', coins);
         updateShop();
         alert('Фон разблокирован!');
@@ -216,23 +228,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 prevBallButton.addEventListener('click', () => {
     ballIndex = (ballIndex - 1 + balls.length) % balls.length;
+    document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
 });
 
 nextBallButton.addEventListener('click', () => {
     ballIndex = (ballIndex + 1) % balls.length;
+    document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
 });
 
 prevFieldButton.addEventListener('click', () => {
-    fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
-    updateFieldDisplay();
+    let newIndex = fieldIndex;
+    do {
+        newIndex = (newIndex - 1 + fields.length) % fields.length;
+    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
+    
+    if (fields[newIndex].unlocked) {
+        fieldIndex = newIndex;
+        fieldType = fields[fieldIndex].type;
+        document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+        updateFieldDisplay();
+        drawField();
+    }
 });
 
 nextFieldButton.addEventListener('click', () => {
-    fieldIndex = (fieldIndex + 1) % fields.length;
-    updateFieldDisplay();
+    let newIndex = fieldIndex;
+    do {
+        newIndex = (newIndex + 1) % fields.length;
+    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
+    
+    if (fields[newIndex].unlocked) {
+        fieldIndex = newIndex;
+        fieldType = fields[fieldIndex].type; // Добавлено
+        document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+        updateFieldDisplay();
+        drawField(); // Принудительная перерисовка
+    }
 });
+
+// Обновленная функция отрисовки фона
+function drawField() {
+    ctx.fillStyle = fields[fieldIndex].color; // Используем текущий индекс
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'darkgray';
+    ctx.fillRect(road.x, road.y, road.width, road.height);
+}
 
 updateBallDisplay();
 updateFieldDisplay();
@@ -298,15 +340,6 @@ pauseMenuButton.addEventListener('click', () => {
     startScreen.classList.remove('hidden');
     resetGame();
 });
-
-function drawField() {
-    const field = fields.find(f => f.type === fieldType);
-    ctx.fillStyle = field.color;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'darkgray';
-    ctx.fillRect(road.x, road.y, road.width, road.height);
-}
 
 function drawBall() {
     const currentBall = balls[ballIndex];
@@ -724,26 +757,6 @@ function updateShop() {
         fields[fieldIndex].unlocked || coins < fieldPrices[fieldIndex];
 } 
 
-document.getElementById('buyBallButton').addEventListener('click', () => {
-    if (coins >= ballPrices[ballIndex] && !balls[ballIndex].unlocked) {
-        coins -= ballPrices[ballIndex];
-        balls[ballIndex].unlocked = true;
-        localStorage.setItem('coins', coins);
-        updateShop();
-        alert('Мяч разблокирован!');
-    }
-});
-
-document.getElementById('buyFieldButton').addEventListener('click', () => {
-    if (coins >= fieldPrices[fieldIndex] && !fields[fieldIndex].unlocked) {
-        coins -= fieldPrices[fieldIndex];
-        fields[fieldIndex].unlocked = true;
-        localStorage.setItem('coins', coins);
-        updateShop();
-        alert('Фон разблокирован!');
-    }
-});
-
 function updateGameUI() {
     document.getElementById('coinsDisplayGame').textContent = coins;
 }
@@ -751,28 +764,16 @@ document.getElementById('customizeButton').addEventListener('click', () => {
     updateShop();
 });
 
-prevBallButton.addEventListener('click', () => {
-    let newIndex = ballIndex;
-    do {
-        newIndex = (newIndex - 1 + balls.length) % balls.length;
-    } while (!balls[newIndex].unlocked && newIndex !== ballIndex);
-    
-    if (balls[newIndex].unlocked) {
-        ballIndex = newIndex;
-        updateBallDisplay();
-    }
+prevFieldButton.addEventListener('click', () => {
+    fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
+    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+    updateFieldDisplay();
 });
 
-nextBallButton.addEventListener('click', () => {
-    let newIndex = ballIndex;
-    do {
-        newIndex = (newIndex + 1) % balls.length;
-    } while (!balls[newIndex].unlocked && newIndex !== ballIndex);
-    
-    if (balls[newIndex].unlocked) {
-        ballIndex = newIndex;
-        updateBallDisplay();
-    }
+nextFieldButton.addEventListener('click', () => {
+    fieldIndex = (fieldIndex + 1) % fields.length;
+    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+    updateFieldDisplay();
 });
 
 // Аналогично для фонов
