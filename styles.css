@@ -21,6 +21,10 @@ body {
   background-color: #fff;
 }
 
+#gameCanvas {
+  touch-action: none;
+}
+
 .controls {
   position: absolute;
   top: 10px;

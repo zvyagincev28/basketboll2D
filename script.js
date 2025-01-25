@@ -449,50 +449,51 @@ canvas.addEventListener('mouseup', () => {
 });
 
 canvas.addEventListener('touchstart', (e) => {
-    if (isGameOver) return;
-
+    if (isGameOver || isPaused) return;
+    
     e.preventDefault();
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const mouseX = touch.clientX - rect.left;
     const mouseY = touch.clientY - rect.top;
 
-    const distance = Math.sqrt((mouseX - joystick.x) ** 2 + (mouseY - joystick.y) ** 2);
-    if (distance <= joystick.baseRadius) {
-        joystick.isDragging = true;
-        joystick.dragStartX = mouseX - joystick.x;
-        joystick.dragStartY = mouseY - joystick.y;
-    }
+    // Устанавливаем позицию джойстика
+    joystick.x = mouseX;
+    joystick.y = mouseY;
+    joystick.isVisible = true;
+    joystick.isDragging = true;
+    joystick.dragStartX = mouseX;
+    joystick.dragStartY = mouseY;
 });
 
 canvas.addEventListener('touchmove', (e) => {
-    if (isGameOver) return;
-
+    if (!joystick.isDragging || isGameOver) return;
     e.preventDefault();
-    if (joystick.isDragging) {
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = touch.clientX - rect.left;
-        const mouseY = touch.clientY - rect.top;
 
-        const deltaX = mouseX - joystick.x - joystick.dragStartX;
-        const deltaY = mouseY - joystick.y - joystick.dragStartY;
-        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = touch.clientX - rect.left;
+    const mouseY = touch.clientY - rect.top;
 
-        if (distance <= joystick.baseRadius) {
-            joystick.dragX = deltaX;
-            joystick.dragY = deltaY;
-        } else {
-            const angle = Math.atan2(deltaY, deltaX);
-            joystick.dragX = Math.cos(angle) * joystick.baseRadius;
-            joystick.dragY = Math.sin(angle) * joystick.baseRadius;
-        }
+    // Рассчитываем смещение относительно начальной точки
+    const deltaX = mouseX - joystick.dragStartX;
+    const deltaY = mouseY - joystick.dragStartY;
+    
+    // Ограничиваем смещение радиусом джойстика
+    const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    if (distance <= joystick.baseRadius) {
+        joystick.dragX = deltaX;
+        joystick.dragY = deltaY;
+    } else {
+        const angle = Math.atan2(deltaY, deltaX);
+        joystick.dragX = Math.cos(angle) * joystick.baseRadius;
+        joystick.dragY = Math.sin(angle) * joystick.baseRadius;
     }
 });
 
 canvas.addEventListener('touchend', () => {
-    if (isGameOver) return;
-
+    joystick.isVisible = false;
+    
     if (joystick.isDragging) {
         joystick.isDragging = false;
         throwBall();
