@@ -212,3 +212,64 @@ button, select {
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-optimize-contrast;
 }
+.customize-section {
+  margin: 20px 0;
+}
+
+#ballsSection, #fieldsSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.preview-img {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #000;
+}
+
+.preview-block {
+  width: 100px;
+  height: 60px;
+  border: 2px solid #000;
+}
+
+#toggleBallsButton, #toggleFieldsButton {
+  padding: 10px 20px;
+  background-color: #ea7b44;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 5px;
+}
+/* Стили для заблокированных предметов */
+#ballTypeDisplay, #fieldTypeDisplay {
+  color: red;
+  font-weight: bold;
+}
+#backToStartButton2 {
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    width: 200px;
+    margin: 10px 0;
+    border: 2px solid white;
+    border-radius: 5px;
+    background-color: #ea7b44;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Отображение монет в игре */
+#coinsDisplayGame {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    font-size: 24px;
+    color: gold;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+}

@@ -23,27 +23,48 @@ const pauseButton = document.getElementById('pauseButton');
 const pauseMenu = document.getElementById('pauseMenu');
 const resumeButton = document.getElementById('resumeButton');
 const pauseMenuButton = document.getElementById('pauseMenuButton');
+const hoops = [
+    {
+        type: 'default',
+        image: new Image(),
+        src: 'assets/hoop_default.png'
+    }
+];
 
-// Массив мячей с изображениями
+let coins = parseInt(localStorage.getItem('coins')) || 0;
+const ballPrices = [0, 5, 10];
+const fieldPrices = [0, 15, 20];
+
+// Массив мячей
 const balls = [
     { 
         type: 'basketball',
         image: new Image(),
         src: 'assets/default_ball.png',
-        color: 'gray'
+        color: 'gray',
+        unlocked: true
     },
     { 
-        type: 'fooball',
+        type: 'football',
         image: new Image(),
-        src: 'assets/new_ball.png', // Исправленный путь
-        color: 'brown'
+        src: 'assets/new_ball.png',
+        color: 'brown',
+        unlocked: false
     },
     { 
         type: 'volleyball',
         image: new Image(),
-        src: 'assets/new_ball2.png', // Исправленный путь
-        color: 'white'
+        src: 'assets/new_ball2.png',
+        color: 'white',
+        unlocked: false
     }
+];
+
+// Массив фонов (добавлено свойство unlocked)
+const fields = [
+    { type: 'default', color: 'lightgreen', unlocked: true },
+    { type: 'park', color: 'darkgreen', unlocked: false },
+    { type: 'gym', color: 'gray', unlocked: false }
 ];
 
 // Предзагрузка изображений
@@ -54,12 +75,19 @@ balls.forEach(ball => {
         drawBall();
     };
 });
+hoops.forEach(hoop => {
+    hoop.image.src = hoop.src;
+    hoop.image.onload = () => {
+        console.log(`Изображение кольца загружено`);
+        drawHoop();
+    };
+});
 
 let playerName = '';
 let score = 0;
 let ballType = 'default';
 let fieldType = 'default';
-let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dx: 0, dy: 0 }; // Стартовая позиция по центру
+let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dx: 0, dy: 0, isWallBounce: false}; // Стартовая позиция по центру
 let hoop = { x: 50, y: 200, width: 80, height: 10, backboardWidth: 10, backboardHeight: 60 };
 let isBallThrown = false;
 let streak = 0;
@@ -80,12 +108,6 @@ let joystick = {
     dragY: 0
 };
 
-const fields = [
-    { type: 'default', color: 'lightgreen' },
-    { type: 'park', color: 'darkgreen' },
-    { type: 'gym', color: 'gray' }
-];
-
 const road = {
     x: 0,
     y: canvas.height - 30,
@@ -98,18 +120,98 @@ const minSpeed = 1;
 
 let ballIndex = 0;
 let fieldIndex = 0;
+// Монетки
+let coinsArr = [];
+class Coin {
+    constructor() {
+        this.x = Math.random() * (canvas.width - 30);
+        this.y = Math.random() * (canvas.height - 100);
+        this.radius = 12;
+    }
+}
+
+function spawnCoins() {
+    if (Math.random() < 0.02 && coinsArr.length < 5) {
+        coinsArr.push(new Coin());
+    }
+}
+
+function drawCoins() {
+    coinsArr.forEach(coin => {
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFD700';
+        ctx.fill();
+    });
+}
+
+function checkCoinCollision() {
+    coinsArr = coinsArr.filter(coin => {
+        const dx = ball.x - coin.x;
+        const dy = ball.y - coin.y;
+        const distance = Math.sqrt(dx ** 2 + dy ** 2);
+
+        if (distance < ball.radius + coin.radius) {
+            coins++;
+            localStorage.setItem('coins', coins);
+            updateGameUI();
+        }
+        
+        if (distance < ball.radius + coin.radius) {
+            coins++;
+            localStorage.setItem('coins', coins);
+            document.getElementById('coinSound').play();
+            return false;
+        }
+        return true;
+    });
+}
+
 
 function updateBallDisplay() {
-    ballTypeDisplay.textContent = balls[ballIndex].type;
-    // Принудительная перерисовка мяча
+    const currentBall = balls[ballIndex];
+    ballTypeDisplay.textContent = currentBall.unlocked ? currentBall.type : "Недостаточно монеток";
+    document.getElementById('buyBallButton').disabled = currentBall.unlocked;
     drawBall();
 }
 
 function updateFieldDisplay() {
-    fieldTypeDisplay.textContent = fields[fieldIndex].type;
-    fieldType = fields[fieldIndex].type;
+    const currentField = fields[fieldIndex];
+    fieldTypeDisplay.textContent = currentField.unlocked ? currentField.type : "Недостаточно монеток";
+    document.getElementById('buyFieldButton').disabled = currentField.unlocked;
     drawField();
 }
+
+// Раскомментирован код покупки фонов
+document.getElementById('buyFieldButton').addEventListener('click', () => {
+    if (coins >= fieldPrices[fieldIndex] && !fields[fieldIndex].unlocked) {
+        coins -= fieldPrices[fieldIndex];
+        fields[fieldIndex].unlocked = true;
+        localStorage.setItem('coins', coins);
+        updateShop();
+        alert('Фон разблокирован!');
+    }
+});
+
+// Обновление магазина при открытии
+customizeButton.addEventListener('click', () => {
+    startScreen.classList.add('hidden');
+    customizeScreen.classList.remove('hidden');
+    updateShop(); // Добавлен вызов
+});
+
+// Увеличен шанс появления монет
+function spawnCoins() {
+    if (Math.random() < 0.03 && coinsArr.length < 3) {
+        coinsArr.push(new Coin());
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    resizeCanvas();
+    drawField(); // Перемещено сюда
+    gameLoop();  // Перемещено сюда
+});
 
 prevBallButton.addEventListener('click', () => {
     ballIndex = (ballIndex - 1 + balls.length) % balls.length;
@@ -144,7 +246,9 @@ function resizeCanvas() {
     road.y = canvas.height - 30;
     road.width = canvas.width;
 
-    joystick.y = canvas.height - 100;
+    joystick.x = 100;
+    joystick.y = canvas.height - 100; // Фиксированная позиция снизу
+
     ball.x = canvas.width / 2; // Центр по X
     ball.y = canvas.height - 50;
 }
@@ -225,18 +329,29 @@ function drawBall() {
 }
 
 function drawHoop() {
-
-    ctx.fillStyle = 'red';
-    ctx.fillRect(hoop.x, hoop.y, 10, hoop.height);
-    ctx.fillRect(hoop.x + hoop.width - 10, hoop.y, 10, hoop.height);
-
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(hoop.x, hoop.y + hoop.height);
-    ctx.lineTo(hoop.x + hoop.width / 2, hoop.y + hoop.height + 20);
-    ctx.lineTo(hoop.x + hoop.width, hoop.y + hoop.height);
-    ctx.stroke();
+    const currentHoop = hoops[0]; // Используем первое кольцо (индекс 0)
+    if (currentHoop.image.complete) {
+        ctx.drawImage(
+            currentHoop.image,
+            hoop.x - 25, // Корректировка позиции
+            hoop.y - 40,
+            135,
+            135
+        );
+    } else {
+        // Фолбэк (старый код)
+        ctx.fillStyle = 'red';
+        ctx.fillRect(hoop.x, hoop.y, 10, hoop.height);
+        ctx.fillRect(hoop.x + hoop.width - 10, hoop.y, 10, hoop.height);
+        
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(hoop.x, hoop.y + hoop.height);
+        ctx.lineTo(hoop.x + hoop.width / 2, hoop.y + hoop.height + 20); // Исправлено ctx.lineTo
+        ctx.lineTo(hoop.x + hoop.width, hoop.y + hoop.height);
+        ctx.stroke();
+    }
 }
 
 function drawJoystick() {
@@ -392,28 +507,51 @@ function throwBall() {
     }
 }
 
+function checkWallCollision() {
+    // Столкновение с левой/правой стенкой
+    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+        ball.dx *= -0.8;
+        ball.isWallBounce = true; // Устанавливаем флаг
+        isCleanShot = false;
+    }
+
+    if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height) {
+        if (
+            (ball.x + ball.radius >= hoop.x - hoop.backboardWidth && ball.x - ball.radius <= hoop.x) ||
+            (ball.x + ball.radius >= hoop.x + hoop.width - 10 && ball.x - ball.radius <= hoop.x + hoop.width)
+        ) {
+            ball.dx *= -0.8;
+            isCleanShot = false;
+        }
+    }
+}
+
 function checkCollision() {
-    if (ball.dy > 0 &&
-        ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
+    // Попадание в кольцо
+    if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
         ball.x + ball.radius >= hoop.x + 10 && ball.x - ball.radius <= hoop.x + hoop.width - 10) {
         if (!isScored) {
-            if (!isCleanShot) {
-                score += 2; // +2 за отскок
-            } else {
-                score += 1; // +1 за чистый бросок
-            }
+            score += 1; // +1 за попадание
             scoreDisplay.textContent = score;
             isScored = true;
             moveHoop();
         }
-    } else if (ball.y + ball.radius >= road.y) {
+    }
+
+    // Падение на землю
+    if (ball.y + ball.radius >= road.y) {
         ball.y = road.y - ball.radius;
         ball.dy *= -0.6;
         ball.dx *= friction;
 
         if (!isScored) {
-            streak = 0;
-            score = 0;
+            if (ball.isWallBounce) { // +2 за отскок от стены
+                score += 2;
+                streak++;
+            } else { // Обнуление
+                streak = 0;
+                score = 0;
+            }
             scoreDisplay.textContent = score;
             isGameOver = true;
             document.getElementById('gameCanvas').classList.add('blur');
@@ -421,6 +559,7 @@ function checkCollision() {
             menuButton.classList.remove('hidden');
         }
 
+        // Сброс состояния
         if (Math.abs(ball.dy) < minSpeed && Math.abs(ball.dx) < minSpeed) {
             ball.dy = 0;
             ball.dx = 0;
@@ -428,7 +567,9 @@ function checkCollision() {
         }
 
         isCleanShot = false;
+        ball.isWallBounce = false;
     } else if (ball.y > canvas.height) {
+        // Мяч улетел за экран
         if (!isScored) {
             streak = 0;
             score = 0;
@@ -439,30 +580,6 @@ function checkCollision() {
             menuButton.classList.remove('hidden');
         }
         resetBall();
-    }
-}
-
-function checkWallCollision() {
-    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
-        ball.dx *= -0.8;
-        isCleanShot = false;
-    }
-
-    if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
-        ball.x + ball.radius >= hoop.x - hoop.backboardWidth && ball.x - ball.radius <= hoop.x) {
-        ball.dx *= -0.8;
-        isCleanShot = false;
-    }
-
-    if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height) {
-        if (ball.x + ball.radius >= hoop.x && ball.x - ball.radius <= hoop.x + 10) {
-            ball.dx *= -0.8;
-            isCleanShot = false;
-        }
-        if (ball.x + ball.radius >= hoop.x + hoop.width - 10 && ball.x - ball.radius <= hoop.x + hoop.width) {
-            ball.dx *= -0.8;
-            isCleanShot = false;
-        }
     }
 }
 
@@ -499,10 +616,13 @@ function draw() {
 }
 
 function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
+        update();
+        checkCoinCollision();
+        draw();
+        drawCoins();
+        spawnCoins();
+        requestAnimationFrame(gameLoop);
+    }
 
 function loadRecords() {
     const records = JSON.parse(localStorage.getItem('records')) || [];
@@ -562,6 +682,58 @@ function resetGame() {
     ball.x = canvas.width / 2; // Центр
     ball.y = canvas.height - 50; // Стартовая позиция
 }
+
+// Логика магазина
+document.getElementById('toggleBallsButton').addEventListener('click', () => {
+    document.getElementById('ballsSection').classList.remove('hidden');
+    document.getElementById('fieldsSection').classList.add('hidden');
+});
+
+document.getElementById('toggleFieldsButton').addEventListener('click', () => {
+    document.getElementById('fieldsSection').classList.remove('hidden');
+    document.getElementById('ballsSection').classList.add('hidden');
+});
+
+document.getElementById('backToStartButton2').addEventListener('click', () => {
+    customizeScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+});
+
+function updateShop() {
+    document.getElementById('coinsDisplay').textContent = coins;
+    document.getElementById('ballPrice').textContent = ballPrices[ballIndex];
+    document.getElementById('fieldPrice').textContent = fieldPrices[fieldIndex];
+    document.getElementById('ballPreview').src = balls[ballIndex].src;
+    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+}
+
+document.getElementById('buyBallButton').addEventListener('click', () => {
+    if (coins >= ballPrices[ballIndex] && !balls[ballIndex].unlocked) {
+        coins -= ballPrices[ballIndex];
+        balls[ballIndex].unlocked = true;
+        localStorage.setItem('coins', coins);
+        updateShop();
+        alert('Мяч разблокирован!');
+    }
+});
+
+document.getElementById('buyFieldButton').addEventListener('click', () => {
+    if (coins >= fieldPrices[fieldIndex] && !fields[fieldIndex].unlocked) {
+        coins -= fieldPrices[fieldIndex];
+        fields[fieldIndex].unlocked = true;
+        localStorage.setItem('coins', coins);
+        updateShop();
+        alert('Фон разблокирован!');
+    }
+});
+
+function updateGameUI() {
+    document.getElementById('coinsDisplayGame').textContent = coins;
+}
+document.getElementById('customizeButton').addEventListener('click', () => {
+    updateShop();
+});
+
 
 drawField();
 gameLoop();

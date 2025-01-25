@@ -19,6 +19,7 @@
         <canvas id="gameCanvas"></canvas>
         <div id="topBar">
             <div id="scoreContainer">Очки: <span id="score">0</span></div>
+            <div id="coinsDisplayGame">Монеты: 0</div>
             <button id="pauseButton">Пауза</button>
         </div>
         <button id="restartButton" class="hidden">Попробуй снова</button>
@@ -35,20 +36,38 @@
     </div>
     <div id="customizeScreen" class="screen hidden">
         <h1>Оформление</h1>
-        <p>Мяч:
+        <p>Монетки: <span id="coinsDisplay">0</span></p>
+        
+        <div class="customize-section">
+            <button id="toggleBallsButton">Мячи</button>
+            <button id="toggleFieldsButton">Фоны</button>
+        </div>
+
+        <!-- Секция выбора мячей -->
+        <div id="ballsSection">
             <button id="prevBallButton">←</button>
-            <span id="ballTypeDisplay">default</span>
+            <img id="ballPreview" class="preview-img" src="assets/default_ball.png" alt="Мяч">
             <button id="nextBallButton">→</button>
-        </p>
-        <p>Поле:
+            <p>Цена: <span id="ballPrice">0</span> монет</p>
+            <button id="buyBallButton">Купить</button>
+            <p id="ballTypeDisplay" class="status-text"></p>
+        </div>
+
+        <!-- Секция выбора фонов -->
+        <div id="fieldsSection" class="hidden">
             <button id="prevFieldButton">←</button>
-            <span id="fieldTypeDisplay">default</span>
+            <div id="fieldPreview" class="preview-block"></div>
             <button id="nextFieldButton">→</button>
-        </p>
+            <p>Цена: <span id="fieldPrice">0</span> монет</p>
+            <button id="buyFieldButton">Купить</button>
+            <p id="fieldTypeDisplay" class="status-text"></p>
+        </div>
+    
         <button id="backToStartButton2">Назад</button>
     </div>
     <audio id="buttonSound" src="button-click.mp3"></audio>
     <audio id="scoreSound" src="score.mp3"></audio>
+    <audio id="coinSound" src="coin.mp3"></audio>
     <script src="script.js"></script>
 </body>
 </html>
