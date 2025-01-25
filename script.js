@@ -32,8 +32,8 @@ const hoops = [
 ];
 
 let coins = parseInt(localStorage.getItem('coins')) || 0;
-const ballPrices = [0, 5, 10];
-const fieldPrices = [0, 15, 20];
+const ballPrices = [0, 10, 15];
+const fieldPrices = [0, 20, 25];
 
 // Массив мячей
 const balls = [
@@ -249,33 +249,20 @@ function updateBallDisplay() {
 }
 
 prevFieldButton.addEventListener('click', () => {
-    let newIndex = fieldIndex;
-    do {
-        newIndex = (newIndex - 1 + fields.length) % fields.length;
-    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
-    
-    if (fields[newIndex].unlocked) {
-        fieldIndex = newIndex;
-        fieldType = fields[fieldIndex].type;
-        document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
-        updateFieldDisplay();
-        drawField();
-    }
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
+    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+    updateFieldDisplay();
+    drawField(); // Перерисовка фона
 });
 
+// Обработка кнопки "Следующий фон"
 nextFieldButton.addEventListener('click', () => {
-    let newIndex = fieldIndex;
-    do {
-        newIndex = (newIndex + 1) % fields.length;
-    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
-    
-    if (fields[newIndex].unlocked) {
-        fieldIndex = newIndex;
-        fieldType = fields[fieldIndex].type; // Добавлено
-        document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
-        updateFieldDisplay();
-        drawField(); // Принудительная перерисовка
-    }
+    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    fieldIndex = (fieldIndex + 1) % fields.length;
+    document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
+    updateFieldDisplay();
+    drawField(); // Перерисовка фона
 });
 
 // Обновленная функция отрисовки фона
@@ -600,6 +587,8 @@ function checkCollision() {
             scoreDisplay.textContent = score;
             isScored = true;
             moveHoop();
+            document.getElementById('scoreSound').play(); // Воспроизведение звука попадания
+
         }
     }
 
@@ -622,6 +611,7 @@ function checkCollision() {
             document.getElementById('gameCanvas').classList.add('blur');
             restartButton.classList.remove('hidden');
             menuButton.classList.remove('hidden');
+            document.getElementById('putSound').play(); // Воспроизведение звука попадания
         }
 
         // Сброс состояния
