@@ -40,21 +40,21 @@ const balls = [
     { 
         type: 'basketball',
         image: new Image(),
-        src: 'assets/default_ball.png',
+        src: 'assets/ball/default_ball.png',
         color: 'gray',
         unlocked: true
     },
     { 
         type: 'football',
         image: new Image(),
-        src: 'assets/new_ball.png',
+        src: 'assets/ball/new_ball.png',
         color: 'brown',
         unlocked: false
     },
     { 
         type: 'volleyball',
         image: new Image(),
-        src: 'assets/new_ball2.png',
+        src: 'assets/ball/new_ball2.png',
         color: 'white',
         unlocked: false
     }
