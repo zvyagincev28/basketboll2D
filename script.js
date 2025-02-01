@@ -141,7 +141,10 @@ class Coin {
     constructor() {
         this.x = Math.random() * (canvas.width - 30);
         this.y = Math.random() * (canvas.height - 100);
-        this.radius = 12;
+        this.radius = 14;
+        this.image = new Image();
+        this.image.src = 'assets/coin.png';
+        this.angle = 0; // Угол вращения
     }
 }
 
@@ -154,10 +157,25 @@ function spawnCoins() {
 
 function drawCoins() {
     coinsArr.forEach(coin => {
-        ctx.beginPath();
-        ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#FFD700';
-        ctx.fill();
+        if (coin.image.complete) {
+            ctx.save();
+            ctx.translate(coin.x, coin.y);
+            ctx.rotate(coin.angle);
+            ctx.drawImage(
+                coin.image,
+                -coin.radius,
+                -coin.radius,
+                coin.radius * 2,
+                coin.radius * 2
+            );
+            ctx.restore();
+            coin.angle += 0.05; // Скорость вращения
+        } else {
+            ctx.beginPath();
+            ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFD700';
+            ctx.fill();
+        }
     });
 }
 
