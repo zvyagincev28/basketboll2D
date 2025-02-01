@@ -25,6 +25,27 @@ const resumeButton = document.getElementById('resumeButton');
 const pauseMenuButton = document.getElementById('pauseMenuButton');
 const backgroundImage = new Image();
 backgroundImage.src = 'assets/background.png';
+const aboutButton = document.getElementById('aboutButton');
+const aboutScreen = document.getElementById('aboutScreen');
+const backToStartButton3 = document.getElementById('backToStartButton3');
+
+// Обработчик для кнопки "Авторы"
+aboutButton.addEventListener('click', () => {
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }
+    startScreen.classList.add('hidden');
+    aboutScreen.classList.remove('hidden');
+});
+
+// Обработчик для кнопки "Назад" на экране "Авторы"
+backToStartButton3.addEventListener('click', () => {
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }
+    aboutScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+});
 
 backgroundImage.onload = () => {
     console.log('Фоновое изображение загружено');
@@ -39,10 +60,6 @@ document.getElementById('soundButton').addEventListener('click', () => {
     } else {
         document.getElementById('soundButton').textContent = 'Звук: 🔇';
     }
-});
-
-document.getElementById('aboutButton').addEventListener('click', () => {
-    alert('Информация о разработчиках игры.');
 });
 
 const hoops = [
@@ -764,8 +781,8 @@ function update() {
 
 function draw() {
     drawField();
-    drawBall();
     drawHoop();
+    drawBall(); // Мяч рисуется после тени
     drawJoystick();
     drawTrajectory();
 }

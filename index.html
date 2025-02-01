@@ -40,8 +40,7 @@
     </div>
     <div id="customizeScreen" class="screen hidden">
         <h1>Оформление</h1>
-        <p>Монетки: <span id="coinsDisplay">0</span></p>
-        
+        <p>Монетки: <span id="coinsDisplay">0</span></p>        
         <div class="customize-section">
         </div>
 
@@ -58,7 +57,7 @@
         <!-- Секция выбора фонов -->
         <div id="fieldsSection" class="hidden">
             <button id="prevFieldButton">←</button>
-            <div id="fieldPreview" class="preview-block"</div></div>
+            <div id="fieldPreview" class="preview-block"></div>
             <button id="nextFieldButton">→</button>
             <p>Цена: <span id="fieldPrice">0</span> монет</p>
             <button id="buyFieldButton">Купить</button>
@@ -67,12 +66,27 @@
     
         <button id="backToStartButton2">Назад</button>
     </div>
+
+    <!-- Новый экран "Авторы" -->
+    <div id="aboutScreen" class="screen hidden">
+        <h1>Авторы</h1>
+        <div class="about-content">
+            <br6><strong>Имена разработчиков:</strong><br6> 
+                <p>Никита</p>
+                <p>Кристина</p>
+            <br6><strong>Имя кота разработчиков:</strong></br6>
+                <p>Рики</p>
+            <p><strong>Почта:</strong> zvyagincev.nik@yandex.ru</p>
+            <p><strong>Версия игры:</strong> 1.0.0</p>
+        </div>
+        <button id="backToStartButton3">Назад</button>
+    </div>
+
     <audio id="buttonSound" src="assets/button-click.mp3"></audio>
     <audio id="scoreSound" src="assets/score.mp3"></audio>
     <audio id="coinSound" src="assets/coin.mp3"></audio>
     <audio id="putSound" src="assets/putSound.mp3"></audio>
 
     <script src="script.js"></script>
-    </div>
 </body>
 </html>

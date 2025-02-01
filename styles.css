@@ -360,3 +360,38 @@ button, select {
   padding: 8px 0 !important;
   font-size: 14px !important;
 }
+#aboutScreen {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(247, 88, 2, 0.5);
+  text-align: center;
+}
+
+.about-content {
+  margin: 20px 0;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+#backToStartButton3 {
+  padding: 15px 30px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 200px;
+  margin: 10px 0;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: #ea7b44;
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#backToStartButton3:hover {
+  background-color: #cc5c00ee;
+  transform: scale(1.05);
+}
+
+#backToStartButton3:active {
+  transform: scale(0.95);
+}
