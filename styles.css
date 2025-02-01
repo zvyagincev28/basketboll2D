@@ -216,7 +216,7 @@ button, select {
     }
 
     #resumeButton, #pauseMenuButton {
-        width: 100%; /* Кнопки занимают всю ширину меню */
+        width: 90%; /* Кнопки занимают всю ширину меню */
         margin: 5px 0; /* Отступы между кнопками */
     }
 }
