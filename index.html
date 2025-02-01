@@ -9,11 +9,14 @@
 <body>
     <div id="startScreen" class="screen">
         <h1>Баскетбол 2D</h1>
-        <p><h4>Введите ваше имя:</h4></p>
-        <br><input type="text" id="playerName" placeholder="Имя игрока" /><br>
-        <br><button id="startButton">Играть</button><br>
+        <p1><button id="startButton">Играть</button><p1>
         <br><button id="showRecordsButton">Таблица рекордов</button><br>
-        <br><button id="customizeButton">Оформление</button><br>
+        <p1><button id="customizeButton">Оформление</button><p1>
+        <div class="bottom-buttons">
+            <button id="soundButton">Звук: 🔊</button>
+            <button id="aboutButton">Авторы</button>
+        </div>
+    </div>
     </div>
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas"></canvas>

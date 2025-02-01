@@ -23,6 +23,21 @@ const pauseButton = document.getElementById('pauseButton');
 const pauseMenu = document.getElementById('pauseMenu');
 const resumeButton = document.getElementById('resumeButton');
 const pauseMenuButton = document.getElementById('pauseMenuButton');
+
+let isSoundOn = true;
+document.getElementById('soundButton').addEventListener('click', () => {
+    isSoundOn = !isSoundOn;
+    if (isSoundOn) {
+        document.getElementById('soundButton').textContent = 'Звук: 🔊';
+    } else {
+        document.getElementById('soundButton').textContent = 'Звук: 🔇';
+    }
+});
+
+document.getElementById('aboutButton').addEventListener('click', () => {
+    alert('Информация о разработчиках игры.');
+});
+
 const hoops = [
     {
         type: 'default',
@@ -83,7 +98,6 @@ hoops.forEach(hoop => {
     };
 });
 
-let playerName = '';
 let score = 0;
 let ballType = 'default';
 let fieldType = 'default';
@@ -162,8 +176,10 @@ function checkCoinCollision() {
         if (distance < ball.radius + coin.radius) {
             coins += 0;
             localStorage.setItem('coins', coins);
-            document.getElementById('coinSound').play();
-            return false;
+            if (isSoundOn) {
+                document.getElementById('coinSound').play();
+            }
+            return false;        
         }
         return true;
     });
@@ -227,15 +243,20 @@ document.addEventListener('DOMContentLoaded', () => {
     gameLoop();  // Перемещено сюда
 });
 
+
 prevBallButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     ballIndex = (ballIndex - 1 + balls.length) % balls.length;
     document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
 });
 
 nextBallButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     ballIndex = (ballIndex + 1) % balls.length;
     document.getElementById('ballPreview').src = balls[ballIndex].src;
     updateBallDisplay();
@@ -249,7 +270,9 @@ function updateBallDisplay() {
 }
 
 prevFieldButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
@@ -258,7 +281,9 @@ prevFieldButton.addEventListener('click', () => {
 
 // Обработка кнопки "Следующий фон"
 nextFieldButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     fieldIndex = (fieldIndex + 1) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
@@ -297,26 +322,27 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 startButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
-    playerName = document.getElementById('playerName').value.trim();
-    if (playerName === '') {
-        alert('Пожалуйста, введите ваше имя!');
-        return;
-    }
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     startScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     resetGame();
-});
+});  
 
 restartButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     resetGame();
     restartButton.classList.add('hidden');
     menuButton.classList.add('hidden');
 });
 
 menuButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     resetGame();
     gameScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
@@ -324,19 +350,26 @@ menuButton.addEventListener('click', () => {
 });
 
 pauseButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     isPaused = true;
     pauseMenu.classList.remove('hidden');
 });
 
+
 resumeButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     isPaused = false;
     pauseMenu.classList.add('hidden');
 });
 
 pauseMenuButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     isPaused = false;
     pauseMenu.classList.add('hidden');
     gameScreen.classList.add('hidden');
@@ -587,7 +620,9 @@ function checkCollision() {
             scoreDisplay.textContent = score;
             isScored = true;
             moveHoop();
-            document.getElementById('scoreSound').play(); // Воспроизведение звука попадания
+            if (isSoundOn) {
+                document.getElementById('scoreSound').play();
+            } // Воспроизведение звука попадания
 
         }
     }
@@ -611,7 +646,9 @@ function checkCollision() {
             document.getElementById('gameCanvas').classList.add('blur');
             restartButton.classList.remove('hidden');
             menuButton.classList.remove('hidden');
-            document.getElementById('putSound').play(); // Воспроизведение звука попадания
+            if (isSoundOn) {
+                document.getElementById('putSound').play();
+            }// Воспроизведение звука кнопки // Воспроизведение звука попадания
         }
 
         // Сброс состояния
@@ -691,33 +728,41 @@ function loadRecords() {
 
 function saveRecord() {
     const records = JSON.parse(localStorage.getItem('records')) || [];
-    records.push({ name: playerName, score: score });
+    records.push({ name: "Игрок", score: score });
     records.sort((a, b) => b.score - a.score);
     localStorage.setItem('records', JSON.stringify(records));
     loadRecords();
 }
 
 showRecordsButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки // Воспроизведение звука кнопки
     startScreen.classList.add('hidden');
     recordsScreen.classList.remove('hidden');
     loadRecords();
 });
 
 backToStartButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки // Воспроизведение звука кнопки
     recordsScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
 });
 
 customizeButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки // Воспроизведение звука кнопки
     startScreen.classList.add('hidden');
     customizeScreen.classList.remove('hidden');
 });
 
 backToStartButton2.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки // Воспроизведение звука кнопки
     customizeScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
 });
@@ -784,14 +829,18 @@ document.getElementById('customizeButton').addEventListener('click', () => {
 });
 
 prevFieldButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки // Воспроизведение звука кнопки
     fieldIndex = (fieldIndex - 1 + fields.length) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
 });
 
 nextFieldButton.addEventListener('click', () => {
-    document.getElementById('buttonSound').play(); // Воспроизведение звука кнопки
+    if (isSoundOn) {
+        document.getElementById('buttonSound').play();
+    }// Воспроизведение звука кнопки
     fieldIndex = (fieldIndex + 1) % fields.length;
     document.getElementById('fieldPreview').style.backgroundColor = fields[fieldIndex].color;
     updateFieldDisplay();
