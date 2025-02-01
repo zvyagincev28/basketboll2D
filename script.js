@@ -133,7 +133,7 @@ let joystick = {
 
 const road = {
     x: 0,
-    y: canvas.height - 30,
+    y: canvas.height - 90,
     width: canvas.width,
     height: 90,
 };
@@ -351,7 +351,7 @@ function resizeCanvas() {
     joystick.y = canvas.height - 100; // Фиксированная позиция снизу
 
     ball.x = canvas.width / 2; // Центр по X
-    ball.y = canvas.height - 50;
+    ball.y = canvas.height - 100;
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -415,21 +415,21 @@ pauseMenuButton.addEventListener('click', () => {
 
 function drawBall() {
     // Отрисовка тени
-    if (ball.y + ball.radius >= road.y- 90) { // Тень появляется, когда мяч близко к земле
+    if (ball.y + ball.radius >= road.y - 100) { // Тень появляется, когда мяч близко к земле
         const distanceFromGround = road.y - (ball.y + ball.radius); // Расстояние от мяча до земли
         shadow.opacity = 1 - (distanceFromGround / 100); // Прозрачность тени зависит от высоты
         shadow.radius = ball.radius * (1 - distanceFromGround / 100); // Размер тени зависит от высоты
 
         // Смещение тени в сторону (например, вправо) и немного сзади
         const shadowOffsetX = 10; // Смещение тени по X
-        const shadowOffsetY = 10; // Смещение тени по Y
+        const shadowOffsetY = 0; // Смещение тени по Y
 
         // Отрисовка овальной тени
         ctx.save();
         ctx.beginPath();
         ctx.ellipse(
-            ball.x + shadowOffsetX, // Позиция тени по X
-            road.y + shadowOffsetY, // Позиция тени по Y
+            ball.x + shadowOffsetX, // Позиция тени по X (под мячом)
+            road.y + shadowOffsetY, // Позиция тени по Y (на уровне земли)
             shadow.radius * 1.5, // Растягиваем тень по оси X
             shadow.radius * 0.5, // Сжимаем тень по оси Y
             0, 0, Math.PI * 2
@@ -737,12 +737,14 @@ function checkCollision() {
 }
 
 function resetBall() {
-    if (ball.y + ball.radius >= canvas.height) {
-        ball.y = canvas.height - ball.radius;
-    }
+    ball.x = canvas.width / 2; // Центр по X
+    ball.y = canvas.height - 100; // Стартовая позиция по Y
     ball.dx = 0;
     ball.dy = 0;
     isBallThrown = false;
+
+    shadow.x = ball.x; // Тень должна быть под мячом
+    shadow.y = road.y; // Тень всегда на уровне земли
 }
 
 function moveHoop() {
@@ -846,6 +848,7 @@ function resetGame() {
     document.getElementById('gameCanvas').classList.remove('blur');
     ball.x = canvas.width / 2; // Центр
     ball.y = canvas.height - 100; // Стартовая позиция
+    road.y = canvas.height - 90;
 }
 
 // Логика магазина
