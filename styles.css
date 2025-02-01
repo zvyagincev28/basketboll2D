@@ -211,12 +211,12 @@ button, select {
       font-size: 18px;
   }
   #pauseMenu {
-        width: 80%; /* Ширина меню паузы */
+        width: 60%; /* Ширина меню паузы */
         padding: 10px;
     }
 
     #resumeButton, #pauseMenuButton {
-        width: 80%; /* Кнопки занимают всю ширину меню */
+        width: 60%; /* Кнопки занимают всю ширину меню */
         margin: 5px 0; /* Отступы между кнопками */
     }
 }
