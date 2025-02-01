@@ -23,6 +23,13 @@ const pauseButton = document.getElementById('pauseButton');
 const pauseMenu = document.getElementById('pauseMenu');
 const resumeButton = document.getElementById('resumeButton');
 const pauseMenuButton = document.getElementById('pauseMenuButton');
+const backgroundImage = new Image();
+backgroundImage.src = 'assets/background.png';
+
+backgroundImage.onload = () => {
+    console.log('Фоновое изображение загружено');
+    drawField(); // Перерисовываем фон после загрузки изображения
+};
 
 let isSoundOn = true;
 document.getElementById('soundButton').addEventListener('click', () => {
@@ -101,7 +108,7 @@ hoops.forEach(hoop => {
 let score = 0;
 let ballType = 'default';
 let fieldType = 'default';
-let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dx: 0, dy: 0, isWallBounce: false}; // Стартовая позиция по центру
+let ball = { x: canvas.width / 2, y: canvas.height - 100, radius: 20, dx: 0, dy: 0, isWallBounce: false}; // Стартовая позиция по центру
 let hoop = { x: 50, y: 200, width: 80, height: 10, backboardWidth: 10, backboardHeight: 60 };
 let isBallThrown = false;
 let streak = 0;
@@ -109,6 +116,7 @@ let isScored = false;
 let isCleanShot = true;
 let isPaused = false;
 let isGameOver = false;
+
 
 let joystick = {
     x: 100,
@@ -127,7 +135,13 @@ const road = {
     x: 0,
     y: canvas.height - 30,
     width: canvas.width,
-    height: 30,
+    height: 90,
+};
+let shadow = {
+    x: ball.x,
+    y: road.y,
+    radius: ball.radius, // Начальный радиус тени
+    opacity: 0 // Начальная прозрачность тени
 };
 
 const friction = 0.50;
@@ -310,10 +324,14 @@ nextFieldButton.addEventListener('click', () => {
 
 // Обновленная функция отрисовки фона
 function drawField() {
-    ctx.fillStyle = fields[fieldIndex].color; // Используем текущий индекс
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'darkgray';
-    ctx.fillRect(road.x, road.y, road.width, road.height);
+    // Отрисовка фонового изображения
+    if (backgroundImage.complete) {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        // Если изображение не загружено, используем цвет фона
+        ctx.fillStyle = fields[fieldIndex].color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 updateBallDisplay();
@@ -326,7 +344,7 @@ function resizeCanvas() {
     canvas.width = width;
     canvas.height = height;
 
-    road.y = canvas.height - 30;
+    road.y = canvas.height - 90;
     road.width = canvas.width;
 
     joystick.x = 100;
@@ -396,8 +414,34 @@ pauseMenuButton.addEventListener('click', () => {
 });
 
 function drawBall() {
+    // Отрисовка тени
+    if (ball.y + ball.radius >= road.y- 90) { // Тень появляется, когда мяч близко к земле
+        const distanceFromGround = road.y - (ball.y + ball.radius); // Расстояние от мяча до земли
+        shadow.opacity = 1 - (distanceFromGround / 100); // Прозрачность тени зависит от высоты
+        shadow.radius = ball.radius * (1 - distanceFromGround / 100); // Размер тени зависит от высоты
+
+        // Смещение тени в сторону (например, вправо) и немного сзади
+        const shadowOffsetX = 10; // Смещение тени по X
+        const shadowOffsetY = 10; // Смещение тени по Y
+
+        // Отрисовка овальной тени
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(
+            ball.x + shadowOffsetX, // Позиция тени по X
+            road.y + shadowOffsetY, // Позиция тени по Y
+            shadow.radius * 1.5, // Растягиваем тень по оси X
+            shadow.radius * 0.5, // Сжимаем тень по оси Y
+            0, 0, Math.PI * 2
+        );
+        ctx.fillStyle = `rgba(0, 0, 0, ${shadow.opacity * 0.5})`; // Тень полупрозрачная
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    // Отрисовка мяча
     const currentBall = balls[ballIndex];
-    
     if (currentBall.image.complete) {
         ctx.drawImage(
             currentBall.image,
@@ -407,7 +451,6 @@ function drawBall() {
             ball.radius * 2
         );
     } else {
-        // Фолбэк с цветом из массива
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = currentBall.color;
@@ -802,7 +845,7 @@ function resetGame() {
     isGameOver = false;
     document.getElementById('gameCanvas').classList.remove('blur');
     ball.x = canvas.width / 2; // Центр
-    ball.y = canvas.height - 50; // Стартовая позиция
+    ball.y = canvas.height - 100; // Стартовая позиция
 }
 
 // Логика магазина
