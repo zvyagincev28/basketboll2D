@@ -691,8 +691,12 @@ function checkWallCollision() {
 
 function checkCollision() {
     // Попадание в кольцо
-    if (ball.y + ball.radius >= hoop.y && ball.y - ball.radius <= hoop.y + hoop.height &&
-        ball.x + ball.radius >= hoop.x + 10 && ball.x - ball.radius <= hoop.x + hoop.width - 10) {
+    const hoopHitboxX = hoop.x + 25; // Смещение относительно спрайта
+const hoopHitboxWidth = 50; // Ширина области попадания
+if (ball.y + ball.radius >= hoop.y + 20 && // Нижняя граница кольца
+    ball.y - ball.radius <= hoop.y + 80 && // Верхняя граница
+    ball.x + ball.radius >= hoopHitboxX &&
+    ball.x - ball.radius <= hoopHitboxX + hoopHitboxWidth) {
         if (!isScored && ball.dy > 0) { // Проверяем, что мяч летит вниз
             score += 1; // +1 за попадание
             scoreDisplay.textContent = score;
@@ -788,13 +792,15 @@ function draw() {
 }
 
 function gameLoop() {
+    if (!isPaused) { // Не обновлять игру на паузе
         update();
         checkCoinCollision();
         draw();
         drawCoins();
         spawnCoins();
-        requestAnimationFrame(gameLoop);
     }
+    requestAnimationFrame(gameLoop);
+}
 
 function loadRecords() {
     const records = JSON.parse(localStorage.getItem('records')) || [];
@@ -927,18 +933,6 @@ nextFieldButton.addEventListener('click', () => {
     updateFieldDisplay();
 });
 
-// Аналогично для фонов
-prevFieldButton.addEventListener('click', () => {
-    let newIndex = fieldIndex;
-    do {
-        newIndex = (newIndex - 1 + fields.length) % fields.length;
-    } while (!fields[newIndex].unlocked && newIndex !== fieldIndex);
-    
-    if (fields[newIndex].unlocked) {
-        fieldIndex = newIndex;
-        updateFieldDisplay();
-    }
-});
 function draw() {
     drawField();
     drawHoop(); // Сначала рисуем кольцо
@@ -946,6 +940,20 @@ function draw() {
     drawJoystick();
     drawTrajectory();
 }
+
+function checkOrientation() {
+    if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth <= 768) {
+        document.getElementById('orientationBanner').style.display = 'flex';
+        isPaused = true;
+    } else {
+        document.getElementById('orientationBanner').style.display = 'none';
+        isPaused = false;
+    }
+}
+
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+checkOrientation(); // Проверка при загрузке
 
 drawField();
 gameLoop();
